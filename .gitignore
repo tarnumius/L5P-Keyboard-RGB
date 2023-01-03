@@ -11,3 +11,4 @@ target
 things.md
 *.json
 .history
+.idea/*

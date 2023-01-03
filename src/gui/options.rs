@@ -55,6 +55,7 @@ pub struct OptionsTile {
 	pub brightness_choice: Choice,
 	pub direction_choice: Choice,
 	pub fps_input: IntInput,
+	pub fade_time_input: IntInput,
 }
 
 impl OptionsTile {
@@ -68,6 +69,8 @@ impl OptionsTile {
 		let mut direction_choice = OptionsChoice::create(x + 25 + 300, y + 25, 90, 35, "Direction: ", "Left|Right").right_of(&brightness_choice, 130);
 
 		let mut fps_input = InputChoice::create(x + 25 + 80, y + 25, 45, 35, "FPS: ").right_of(&direction_choice, 80);
+
+		let mut fade_time_choice = InputChoice::create(x + 25 + 380, y + 25, 45, 35, "Fade Time: ").right_of(&direction_choice, 130);
 
 		options_tile.end();
 
@@ -91,6 +94,29 @@ impl OptionsTile {
 					}
 
 					if (1..=5).contains(&speed) {
+						tx.send(Message::Refresh).unwrap();
+					}
+				}
+			}
+		});
+
+		fade_time_choice.set_trigger(CallbackTrigger::Changed);
+		fade_time_choice.set_maximum_size(3);
+		fade_time_choice.set_callback({
+			let tx = tx.clone();
+			let stop_signals = stop_signals.clone();
+			move |fade_time_input| {
+				stop_signals.store_true();
+				if let Ok(fade_time) = fade_time_input.value().parse::<u64>() {
+					if fade_time > 600 {
+						fade_time_input.set_value("600");
+					} else if fade_time < 10 {
+						fade_time_input.set_value("10");
+					} else {
+						fade_time_input.set_value(&fade_time.to_string());
+					}
+
+					if (10..=600).contains(&fade_time) {
 						tx.send(Message::Refresh).unwrap();
 					}
 				}
@@ -153,6 +179,7 @@ impl OptionsTile {
 			brightness_choice,
 			direction_choice,
 			fps_input,
+			fade_time_input: fade_time_choice,
 		}
 	}
 
@@ -168,6 +195,12 @@ impl OptionsTile {
 			self.speed_input.activate()
 		} else {
 			self.speed_input.deactivate()
+		}
+
+		if effect.takes_fade_time() {
+			self.fade_time_input.activate()
+		} else {
+			self.fade_time_input.deactivate()
 		}
 
 		if matches!(effect, Effects::AmbientLight { .. }) {

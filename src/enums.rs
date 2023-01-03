@@ -41,6 +41,13 @@ impl Effects {
 		)
 	}
 
+	pub fn takes_fade_time(&self) -> bool {
+		matches!(
+			self,
+			Effects::Fade
+		)
+	}
+
 	pub fn as_u8(&self) -> u8 {
 		match self {
 			Effects::Static => 0,

@@ -28,6 +28,7 @@ const DEVICE_INFO_2020: (u16, u16, u16, u16) = (0x048d, 0xc955, 0xff89, 0x00cc);
 const DEVICE_INFO_IDEAPAD_2021: (u16, u16, u16, u16) = (0x048d, 0xc963, 0xff89, 0x00cc);
 
 const SPEED_RANGE: std::ops::Range<u8> = 1..5;
+const FADE_RANGE: std::ops::Range<u64> = 10..600;
 const BRIGHTNESS_RANGE: std::ops::Range<u8> = 1..3;
 
 pub enum BaseEffects {
@@ -42,6 +43,7 @@ pub struct LightingState {
 	effect_type: BaseEffects,
 	speed: u8,
 	brightness: u8,
+	fade_time: u64,
 	rgb_values: [u8; 12],
 }
 
@@ -112,6 +114,12 @@ impl Keyboard {
 	pub fn set_speed(&mut self, speed: u8) {
 		let speed = speed.clamp(SPEED_RANGE.min().unwrap(), SPEED_RANGE.max().unwrap());
 		self.current_state.speed = speed;
+		self.refresh();
+	}
+
+	pub fn set_fade_time(&mut self, fade_time: u64) {
+		let fade_time = fade_time.clamp(FADE_RANGE.min().unwrap(), FADE_RANGE.max().unwrap());
+		self.current_state.fade_time = fade_time;
 		self.refresh();
 	}
 
@@ -217,6 +225,7 @@ pub fn get_keyboard(stop_signal: Arc<AtomicBool>) -> Result<Keyboard, error::Err
 		speed: 1,
 		brightness: 1,
 		rgb_values: [0; 12],
+		fade_time: 1
 	};
 
 	let mut keyboard = Keyboard {

@@ -71,6 +71,7 @@ pub struct Profile {
 	pub speed: u8,
 	pub brightness: u8,
 	pub ui_toggle_button_state: [bool; 5],
+	pub fade_time: u64,
 }
 
 impl Profile {

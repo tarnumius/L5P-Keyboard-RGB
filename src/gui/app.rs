@@ -161,6 +161,7 @@ impl App {
 		let speed = self.options_tile.speed_input.value().parse::<u8>().unwrap();
 		let brightness = self.options_tile.brightness_choice.choice().unwrap().parse::<u8>().unwrap();
 		let ui_toggle_button_state = self.color_tiles.get_button_state();
+		let fade_time = self.options_tile.fade_time_input.value().parse::<u64>().unwrap();
 
 		Profile {
 			rgb_array,
@@ -169,6 +170,7 @@ impl App {
 			speed,
 			brightness,
 			ui_toggle_button_state,
+			fade_time,
 		}
 	}
 

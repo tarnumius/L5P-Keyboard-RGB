@@ -58,6 +58,10 @@ enum Commands {
 		#[arg(short, long, default_value_t = 1, value_parser = clap_value_parser!(["1","2","3","4","5"], u8))]
 		speed: u8,
 
+		/// The speed of the effect
+		#[arg(short, long, default_value_t = 1, value_parser = clap_value_parser!(["1","2","3","4","5"], u64))]
+		fade_time: u64,
+
 		/// The direction of the effect (If applicable)
 		#[arg(short, long, value_enum)]
 		direction: Option<Direction>,
@@ -130,6 +134,7 @@ pub fn try_cli() -> Result<(), Report> {
 					colors,
 					brightness,
 					speed,
+					fade_time,
 					direction,
 					save,
 				} => {
@@ -153,6 +158,7 @@ pub fn try_cli() -> Result<(), Report> {
 						speed,
 						brightness,
 						ui_toggle_button_state: [false; 5],
+						fade_time,
 					};
 
 					if let Some(filename) = save {
